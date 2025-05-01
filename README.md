@@ -1,1 +1,1 @@
-# Clock
+# Clock that has a stopwatch and time.
