@@ -2,46 +2,57 @@
 <html>
     <head>
         <title>Dashboard</title>
+        <!-- Google Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Cal+Sans&display=swap" rel="stylesheet">
+        
+        <!-- Google AdSense -->
         <meta name="google-adsense-account" content="ca-pub-7337057232850106">
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7337057232850106"
-        crossorigin="anonymous"></script>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7337057232850106" crossorigin="anonymous"></script>
     </head>
 
     <body>
         <style>
+            /* General Styles */
             body {
-                background-image: linear-gradient(270deg, #0A0068, #26007B, #42008D, #5E00A0, #7A0082);
+                background-image: linear-gradient(270deg, hsl(0,60%,50%), hsl(10,60%,50%), hsl(20,60%,50%), hsl(30,60%,50%));
                 overflow-y: hidden;
                 color: white;
-                margin: 5px;
+                margin: 0px;
                 height: 100vh;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
+            }
 
+            /* Date and Time Styles */
+            .date {
+                position: absolute;
+                top: 5px;
+                left: 20px;
+                font-family: "Cal Sans", sans-serif;
+                font-weight: 400;
+                font-style: normal;
+                font-size: 2vw;
             }
             .time {
-                text-align:center;
+                text-align: center;
                 font-size: 14vw;
                 font-family: "Cal Sans", sans-serif;
                 font-weight: 400;
                 font-style: normal;
                 margin: 0;
             }
+
+            /* Stopwatch Styles */
             .stopwatch {
-                text-align:center;
-                font-size: 14vw;
+                text-align: center;
+                font-size: 10vw;
                 font-family: "Cal Sans", sans-serif;
                 font-weight: 400;
                 font-style: normal;
                 display: none;
             }
             .stopwatch-button {
-                text-align:center;
+                text-align: center;
                 font-size: 3vw;
                 font-family: "Cal Sans", sans-serif;
                 font-weight: 400;
@@ -50,113 +61,349 @@
                 border: none;
                 padding: 7px;
                 background-color: #41DCAE;
-                
-                
+                border-radius: 12px;
+                float: left;
             }
-            .mode-button {
-                text-align:center;
+            .stopwatch-reset {
+                font-size: 2vw;
+                font-family: "Cal Sans", sans-serif;
+                font-weight: 400;
+                font-style: normal;
+                background-color: #c4c4c4;
+                margin: 10px;
+                border: none;
+                border-radius: 12px;
+                padding: 5px;
+                float: right;
+            }
+            /* Timer Styles */
+            .timer {
+                text-align: center;
+                font-size: 14vw;
+                font-family: "Cal Sans", sans-serif;
+                font-weight: 400;
+                font-style: normal;
+                margin: 0;
+            }
+            .timer-form {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-top: 20px;
+            }
+            .timer-text {
+                font-size: 2vw;
+                font-family: "Cal Sans", sans-serif;
+                font-weight: 400;
+                font-style: normal;
+                background-color: #c4c4c4;
+                margin: 10px;
+                border: none;
+                border-radius: 12px;
+                padding: 5px;
+                float: right;
+            }
+            .timer-button {
+                text-align: center;
                 font-size: 3vw;
                 font-family: "Cal Sans", sans-serif;
                 font-weight: 400;
                 font-style: normal;
-                padding: 6px;
+                float: left;
+                display: none;
+                border: none;
+                padding: 7px;
+                background-color: #FF6863;
+                color: red;
+                border-radius: 12px;
+            }
+
+            /* Button Container Styles */
+            .button-container {
+                display: flex;
+                align-items: center;
+                background-color: #000000;
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+            }
+            .mode-button {
+                text-align: center;
+                font-family: "Cal Sans", sans-serif;
+                font-weight: 100;
+                font-style: normal;
+                font-size: 1.5vw;
+                padding: 20px;
                 border: none;
                 border-radius: 7px;
-                background-color: #90D5FF;
+                background-color: black;
             }
-            .date {
-                text-align:center;
-                font-size: 6vw;
-                font-family: "Cal Sans", sans-serif;
-                font-weight: 400;
-                font-style: normal;
-
+            .mode-button:hover {
+                background-color: #2d2d2d;
+                cursor: pointer;
+            }
+            .width25 {
+                width: 25%;
+            }
+            .hidden {
+                display: none;
             }
         </style>
-        <p id="time" class="time"></p>
-        <p id="stopwatch" class="stopwatch">00:00:00</p>
-        <button onclick="stopwatch()" id="stopwatchButton" class="stopwatch-button"><b>Start</b></button>
+
+        <!-- Date and Time Display -->
         <p id="date" class="date"></p>
-        <button onclick="showHide()" id="showHide" class="mode-button"><b>Mode</b></button>
+        <p id="time" class="time"></p>
+
+        <!-- Stopwatch Section -->
+        <p id="stopwatch" class="stopwatch">00:00:00</p>
+        <button onclick="stopwatch('start')" id="stopwatchButton" class="stopwatch-button"><b>Start</b></button>
+        <button onclick="stopwatch('reset')" id="stopwatchReset" class="stopwatch-reset hidden"><b>Reset</b></button>
+
+        <!-- Timer Section -->
+        <div id="timer" class="hidden">
+            <p class="timer" id="timerDisplay">0</p>
+            <form onsubmit="timer(event, 'start')" id="timerForm" class="timer-form">
+                <input type="number" id="timerInput" class="timer-text" placeholder="Enter time in seconds">
+                <button type="submit" id="startTimerButton" class="timer-text">Start Timer</button>
+            </form>
+        </div>
+        <button class="timer-button" onclick="timer(event, 'stopStart')" id="toggleTimer">Stop Timer</button>
+        <button class="timer-text hidden" onclick="timer(event, 'reset')" id="resetTimer">Reset Timer</button>
+
+        <!-- Mode Buttons -->
+        <div class="button-container">
+            <div class="width25">
+                <p onclick="mode('time')" id="timeMode" class="mode-button"><b>Time</b></p>
+            </div>
+            <div class="width25">
+                <p onclick="mode('stopwatch')" id="stopwatchMode" class="mode-button"><b>Stopwatch</b></p>
+            </div>
+            <div class="width25">
+                <p onclick="mode('timer')" id="timerMode" class="mode-button"><b>Timer</b></p>
+            </div>
+            <div class="width25">
+                <p class="mode-button"><b>Simply Clocks</b></p>
+            </div>
+        </div>
+
         <script>
+            // DOM Elements
             const dateContent = document.getElementById("date");
             const timeContent = document.getElementById("time");
             const stopwatchContent = document.getElementById("stopwatch");
             const stopwatchButton = document.getElementById("stopwatchButton");
+            const timerContent = document.getElementById("timer");
+            const timeModeButton = document.getElementById("timeMode");
+            const stopwatchModeButton = document.getElementById("stopwatchMode");
+            const stopwatchReset = document.getElementById("stopwatchReset");
+            const timerModeButton = document.getElementById("timerMode");
+            const timerForm = document.getElementById("timerForm");
+            const timerDisplay = document.getElementById("timerDisplay");
+            const body = document.body;
+
+            // Variables
+            let hue1 = Math.random() * 360;
+            let hue2 = hue1 + 10;
+            let hue3 = hue1 + 20;
+            let hue4 = hue1 + 30;
             let startStop = 0;
             let seconds = 0;
             let minutes = 0;
             let hours = 0;
-            let hidden = 0;
             let intervalId;
+
+            // Utility Functions
             function pad(number) {
                 return number.toString().padStart(2, '0');
             }
+
+            // Time and Date Updates
             function updateTime() {
                 const now = new Date();
                 const timeString = now.toLocaleTimeString();
                 timeContent.textContent = timeString;
             }
-            
             function updateDate() {
                 const now = new Date();
                 const dateString = now.toLocaleDateString();
                 dateContent.textContent = dateString;
             }
-            function showHide() {
-                if (hidden === 1) {
-                    stopwatchContent.style.display="none";
-                    stopwatchButton.style.display="none";
-                    timeContent.style.display="block";
-                    hidden = 0;
-                }
-                else {
-                    timeContent.style.display="none";
-                    stopwatchContent.style.display="block";
-                    stopwatchButton.style.display="block";
-                    hidden = 1;
-                }
-            }
-            function stopwatch() {
-                if (startStop === 0) {
-                    // Stopping timer
-                    stopwatchButton.textContent="Stop";
-                    stopwatchButton.style.color="red";
-                    stopwatchButton.style.backgroundColor = "#FF6863";
-                    
-                    startStop = 1;
-                    intervalId = setInterval(oneSecond,1000);
-                    
-                }
-                else {
-                    // Starting timer
-                    stopwatchButton.textContent="Start";
-                    stopwatchButton.style.color="green";
-                    stopwatchButton.style.backgroundColor = "#41DCAE";
-                    startStop = 0;
-                    clearInterval(intervalId);
 
+            // Mode Switching
+            function mode(modeName) {
+                if (modeName === 'stopwatch') {
+                    stopwatchContent.style.display = "block";
+                    stopwatchButton.style.display = "block";
+                    stopwatchReset.style.display = "block";
+                    timeContent.style.display = "none";
+                    timerContent.style.display = "none";
+                }
+                if (modeName === 'timer') {
+                    timerContent.style.display = "block";
+                    timerForm.style.display = "flex";
+                    stopwatchReset.style.display = "none";
+                    stopwatchContent.style.display = "none";
+                    stopwatchButton.style.display = "none";
+                    timeContent.style.display = "none";
+                }
+                if (modeName === 'time') {
+                    timeContent.style.display = "block";
+                    stopwatchContent.style.display = "none";
+                    stopwatchButton.style.display = "none";
+                    timerContent.style.display = "none";
+                    stopwatchReset.style.display = "none";
                 }
             }
-                
-            function oneSecond() {
-                seconds++
-                if (seconds > 59){
-                    seconds = 0;
-                    minutes++
+
+            // Stopwatch Logic
+            function stopwatch(action) {
+                if (action === "start") {
+                    if (startStop === 0) {
+                        stopwatchButton.textContent = "Stop";
+                        stopwatchButton.style.color = "red";
+                        stopwatchButton.style.backgroundColor = "#FF6863";
+                        startStop = 1;
+                        intervalId = setInterval(oneSecond, 1000);
+                    }
+                    else {
+                        stopwatchButton.textContent = "Start";
+                        stopwatchButton.style.color = "green";
+                        stopwatchButton.style.backgroundColor = "#41DCAE";
+                        startStop = 0;
+                        clearInterval(intervalId);
+                    }
                 }
-                if (minutes > 59){
+                if (action === "reset") {
+                    seconds = 0;
                     minutes = 0;
-                    hours++
+                    hours = 0;
+                    stopwatchContent.textContent = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+                }
+            }
+            function oneSecond() {
+                seconds++;
+                if (seconds > 59) {
+                    seconds = 0;
+                    minutes++;
+                }
+                if (minutes > 59) {
+                    minutes = 0;
+                    hours++;
                 }
                 stopwatchContent.textContent = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
             }
+
+            // Timer Logic
+            const timerSound = new Audio('timer.mp3');
+            const toggleTimer = document.getElementById("toggleTimer");
+            const resetTimer = document.getElementById("resetTimer");
+            let timerInterval;
+            let timerInput;
+
+            function timer(event, action) {
+                if (action === "start") {
+                    event.preventDefault();
+                    toggleTimer.textContent = "Stop";
+                    toggleTimer.style.color = "red";
+                    toggleTimer.style.backgroundColor = "#FF6863";
+                    timerInput = Math.round(parseInt(document.getElementById("timerInput").value));
+                    if (isNaN(timerInput)) {
+                        alert("Please enter a valid number.");
+                    } else if (timerInput === 0) {
+                        alert("Please enter a number greater than zero.");
+                    } else if (timerInput < 0) {
+                        alert("Please enter a positive number.");
+                    } else {
+                        toggleTimer.style.display = "block";
+                        resetTimer.style.display = "block";
+                        timerForm.style.display = "none";
+                        timerDisplay.textContent = timerInput;
+                        timerInterval = setInterval(function () {
+                            timerInput--;
+                            timerDisplay.textContent = timerInput;
+                            if (timerInput <= 0) {
+                                clearInterval(timerInterval);
+                                timerSound.play();
+                                if (timerSound.currentTime === 29) {
+                                    timerSound.currentTime = 0;
+                                }
+                                alert("Time's up!");
+                                timerSound.pause();
+                                timerSound.currentTime = 0;
+                                timerForm.reset();
+                                timerForm.style.display = "flex";
+                                toggleTimer.style.display = "none";
+                                resetTimer.style.display = "none";
+                            }
+                        }, 1000);
+                    }
+                }
+                if (action === "stopStart") {
+                    if (toggleTimer.textContent === "Stop") {
+                        clearInterval(timerInterval);
+                        toggleTimer.textContent = "Start";
+                        toggleTimer.style.color = "green";
+                        toggleTimer.style.backgroundColor = "#41DCAE";
+                        timerSound.pause();
+                        timerSound.currentTime = 0;
+                    }
+                    else if (toggleTimer.textContent === "Start") {
+                        toggleTimer.textContent = "Stop";
+                        toggleTimer.style.color = "red";
+                        toggleTimer.style.backgroundColor = "#FF6863";
+                        timerInterval = setInterval(function () {
+                            timerInput--;
+                            timerDisplay.textContent = timerInput;
+                            if (timerInput <= 0) {
+                                clearInterval(timerInterval);
+                                timerSound.play();
+                                if (timerSound.currentTime === 29) {
+                                    timerSound.currentTime = 0;
+                                }
+                                alert("Time's up!");
+                                timerSound.pause();
+                                timerSound.currentTime = 0;
+                                timerForm.reset();
+                                timerForm.style.display = "flex";
+                                toggleTimer.style.display = "none";
+                                resetTimer.style.display = "none";
+                            }
+                        }, 1000);
+                    }
+                }
+                if (action === "reset") {
+                    clearInterval(timerInterval);
+                    timerInput = 0;
+                    timerDisplay.textContent = timerInput;
+                    timerSound.pause();
+                    timerSound.currentTime = 0;
+                    timerForm.reset();
+                    timerForm.style.display = "flex";
+                    toggleTimer.style.display = "none";
+                    resetTimer.style.display = "none";
+
+                }  
+            }
+
+            // Background Color Animation
+            function changeColor() {
+                hue1 += 1;
+                hue2 += 1;
+                hue3 += 1;
+                hue4 += 1;
+                if (hue1 > 360) hue1 = 0;
+                if (hue2 > 360) hue2 = 0;
+                if (hue3 > 360) hue3 = 0;
+                if (hue4 > 360) hue4 = 0;
+                body.style.backgroundImage = `linear-gradient(270deg, hsl(${hue1}, 60%, 50%), hsl(${hue2}, 60%, 50%), hsl(${hue3}, 60%, 50%), hsl(${hue4}, 60%, 50%))`;
+            }
+
+            // Initialize
             updateTime();
             updateDate();
             setInterval(updateTime, 1000);
             setInterval(updateDate, 1000);
-            
-            
+            setInterval(changeColor, 200);
         </script>
     </body>
 </html>
